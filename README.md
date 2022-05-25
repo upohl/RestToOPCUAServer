@@ -2,7 +2,11 @@
 Converts a Rest Get Call to an OPCUA Server that calls the REST API every second
 
 ## Requirements 
-Python 3.7 
+
+Python 3.7
+
+UAExpert or any other OPC UA Client
+https://www.unified-automation.com/de/produkte/entwicklerwerkzeuge/uaexpert.html
 
 ## Install 
 `git clone https://github.com/upohl/RestToOPCUAServer.git`
