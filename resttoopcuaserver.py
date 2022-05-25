@@ -29,6 +29,8 @@ from asyncua import ua, Server
 from asyncua.common.methods import uamethod
 import requests
 import json
+import flatdict
+
 
 
 
@@ -54,6 +56,8 @@ def json_extract(obj):
 
 
 
+
+
     
 
 @uamethod
@@ -70,16 +74,21 @@ async def write_variable_value(variable,newvalue,_logger=None):
 async def main():
    port = 4840
    url = "http://api.open-notify.org/iss-now.json"
+   delimiter = '.'
+
+
    try:
-        opts, args = getopt.getopt(sys.argv[1:],"p:",["port="])
+        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:",["url="])
    except getopt.GetoptError as err:
-        print("rest.py -p <port> -u <url>")
+        print("resttoopcuaserver.py -u <url>")
         sys.exit(2)
    for o, a in opts:
        if  o in ("-p", "--port"):
            port = a
        if  o in ("-u", "--url"):
            url = a
+       if  d in ("-d", "--delimiter"):
+           delimiter = a
    _logger = logging.getLogger('asyncua')
    # setup our server
    server = Server()
@@ -98,7 +107,11 @@ async def main():
    try:
        response = requests.get(url)
        resp_object = json.loads(response.text)
-       primitives = json_extract(resp_object)
+
+       primitives = flatdict.FlatDict(resp_object, delimiter=delimiter)
+
+
+       # primitives = json_extract(resp_object)
        opcuaTree = {}
        for k, v in primitives.items():
         opcuaTree[k] = await root.add_variable(idx, k, v)
@@ -121,7 +134,8 @@ async def main():
            await asyncio.sleep(1)
            response = requests.get(url)
            resp_object = json.loads(response.text)
-           primitives = json_extract(resp_object)
+           # primitives = json_extract(resp_object)
+           primitives = flatdict.FlatDict(resp_object, delimiter=delimiter)
            for k, v in primitives.items():
                await opcuaTree[k].write_value(v)
  
