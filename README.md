@@ -37,3 +37,8 @@ https://www.unified-automation.com/de/produkte/entwicklerwerkzeuge/uaexpert.html
 
 ## Screenshot of OPC UA CLient UAExpert Browsing the Example
 ![Screenshot of OPC UA CLient UAExpert Browsing the Example](/docs/images/screenshot1.png?raw=true "Screenshot")
+
+
+## Public APIs
+Currently GET API Calls without Authentication are supported without adapting the code
+https://github.com/public-apis/public-apis
