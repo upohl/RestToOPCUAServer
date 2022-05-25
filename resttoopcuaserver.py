@@ -75,21 +75,24 @@ async def main():
    port = 4840
    url = "http://api.open-notify.org/iss-now.json"
    delimiter = '.'
-
+   _logger = logging.getLogger('asyncua')
 
    try:
-        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:",["url="])
+        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:",["url=,delimiter=,port="])
    except getopt.GetoptError as err:
         print("resttoopcuaserver.py -u <url>")
         sys.exit(2)
    for o, a in opts:
        if  o in ("-p", "--port"):
            port = a
+           _logger.info('Port: '+port)
        if  o in ("-u", "--url"):
            url = a
-       if  d in ("-d", "--delimiter"):
+           _logger.info('Url: '+url)
+       if  o in ("-d", "--delimiter"):
            delimiter = a
-   _logger = logging.getLogger('asyncua')
+           _logger.info('delimiter: '+delimiter)
+
    # setup our server
    server = Server()
    await server.init()
