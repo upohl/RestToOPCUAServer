@@ -33,3 +33,7 @@ https://www.unified-automation.com/de/produkte/entwicklerwerkzeuge/uaexpert.html
 
 ### Starts OPC UA Server on port 4841, delimter '.' and rest url https://api.coincap.io/v2/assets/bitcoin every 5 seconds
 `python resttoopcuaserver.py -p 4841 -d . -u https://api.coincap.io/v2/assets/bitcoin -c 5`
+
+
+## Screenshot of OPC UA CLient UAExpert Browsing the Example
+![Screenshot of OPC UA CLient UAExpert Browsing the Example](/docs/images/screenshot1.png?raw=true "Screenshot")
