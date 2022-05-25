@@ -75,12 +75,13 @@ async def main():
    port = 4840
    url = "http://api.open-notify.org/iss-now.json"
    delimiter = '.'
+   cycle = 1
    _logger = logging.getLogger('asyncua')
 
    try:
-        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:",["url=,delimiter=,port="])
+        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:c:",["url=,delimiter=,port="])
    except getopt.GetoptError as err:
-        print("resttoopcuaserver.py -u <url>")
+        print("resttoopcuaserver.py -p <port> -u <url> -d <delimter char> -c <seconds>")
         sys.exit(2)
    for o, a in opts:
        if  o in ("-p", "--port"):
@@ -92,6 +93,9 @@ async def main():
        if  o in ("-d", "--delimiter"):
            delimiter = a
            _logger.info('delimiter: '+delimiter)
+       if  o in ("-c", "--cycle"):
+           cycle = int(a)
+           _logger.info('cycle in seconds: '+delimiter)
 
    # setup our server
    server = Server()
@@ -116,6 +120,8 @@ async def main():
 
        # primitives = json_extract(resp_object)
        opcuaTree = {}
+       # add url as variable
+       opcuaTree[url] = await root.add_variable(idx, 'url', url)
        for k, v in primitives.items():
         opcuaTree[k] = await root.add_variable(idx, k, v)
 
@@ -134,7 +140,7 @@ async def main():
    _logger.info('Starting server!')
    async with server:
        while True:
-           await asyncio.sleep(1)
+           await asyncio.sleep(cycle)
            response = requests.get(url)
            resp_object = json.loads(response.text)
            # primitives = json_extract(resp_object)
