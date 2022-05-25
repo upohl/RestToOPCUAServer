@@ -1,0 +1,9 @@
+Apache RestToOPCUAServer
+Copyright 2022-2022 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+This product includes software from the FreeOpcUa project (LGPL-3.0 license).
+https://github.com/FreeOpcUa
+
