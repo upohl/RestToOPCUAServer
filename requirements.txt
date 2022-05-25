@@ -1,0 +1,2 @@
+asyncua==0.9.92
+requests==2.27.1
