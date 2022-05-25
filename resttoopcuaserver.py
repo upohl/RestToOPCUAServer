@@ -79,7 +79,7 @@ async def main():
    _logger = logging.getLogger('asyncua')
 
    try:
-        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:c:",["url=,delimiter=,port="])
+        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:c:",["url=,delimiter=,port=,cycle="])
    except getopt.GetoptError as err:
         print("resttoopcuaserver.py -p <port> -u <url> -d <delimter char> -c <seconds>")
         sys.exit(2)
