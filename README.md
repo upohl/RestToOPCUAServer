@@ -1,5 +1,5 @@
 # RestToOPCUAServer
-Converts a Rest Get Call to an OPCUA Server that calls the REST API every second
+Converts a Rest API to an OPC UA Server that calls the REST API every second
 
 ## Requirements 
 
