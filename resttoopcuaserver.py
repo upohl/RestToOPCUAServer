@@ -28,6 +28,7 @@ sys.path.insert(0, "..")
 from asyncua import ua, Server
 from asyncua.common.methods import uamethod
 import requests
+from requests.auth import HTTPBasicAuth
 import json
 import flatdict
 
@@ -56,10 +57,6 @@ def json_extract(obj):
 
 
 
-
-
-    
-
 @uamethod
 def func(parent, value):
     return value * 2
@@ -69,19 +66,20 @@ async def write_variable_value(variable,newvalue,_logger=None):
         _logger.info('Set value of %s to %.1f', variable, newvalue)
     await variable.write_value(newvalue)
 
-
-
 async def main():
    port = 4840
-   url = "http://api.open-notify.org/iss-now.json"
+   url = "https://api.open-notify.org/iss-now.json"
    delimiter = '.'
    cycle = 1
+   username = ''
+   password = ''
+
    _logger = logging.getLogger('asyncua')
 
    try:
-        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:c:",["url=,delimiter=,port=,cycle="])
+        opts, args = getopt.getopt(sys.argv[1:],"p:u:d:c:n:m:",["port=","url=","delimiter=","cycle=","username=","password="])
    except getopt.GetoptError as err:
-        print("resttoopcuaserver.py -p <port> -u <url> -d <delimter char> -c <seconds>")
+        print("resttoopcuaserver.py -p <port> -u <url> -d <delimter char> -c <seconds> -n <username> -m <password>")
         sys.exit(2)
    for o, a in opts:
        if  o in ("-p", "--port"):
@@ -95,7 +93,14 @@ async def main():
            _logger.info('delimiter: '+delimiter)
        if  o in ("-c", "--cycle"):
            cycle = int(a)
-           _logger.info('cycle in seconds: '+delimiter)
+           _logger.info('cycle in seconds: '+str(cycle))
+       if  o in ("-n", "--username"):
+           username = str(a)
+           _logger.info('username: '+username)
+       if  o in ("-m", "--password"):
+           password = str(a)
+           _logger.info('password: '+'XZY####') 
+
 
    # setup our server
    server = Server()
@@ -106,14 +111,24 @@ async def main():
    uri = url
    idx = await server.register_namespace(uri)
 
+
     # populating our address space
     # server.nodes, contains links to very common nodes like objects and root
 
    #add root node
    root = await server.nodes.objects.add_object(idx, 'Root')
    try:
-       response = requests.get(url)
-       resp_object = json.loads(response.text)
+       if len(username) != 0 and len(password) != 0:
+           _logger.info('Try secure request:')
+           response = requests.get(url,auth=HTTPBasicAuth(username, password))
+       else:  
+           response = requests.get(url)
+       # let only 200 OK pass     
+       if response.status_code != 200:
+           _logger.info('Failed request:' + str(response.status_code) )
+           sys.exit(2)
+       else:
+           resp_object = json.loads(response.text)
 
        primitives = flatdict.FlatDict(resp_object, delimiter=delimiter)
 
@@ -141,8 +156,17 @@ async def main():
    async with server:
        while True:
            await asyncio.sleep(cycle)
-           response = requests.get(url)
-           resp_object = json.loads(response.text)
+           if len(username) != 0 and len(password) != 0:
+               _logger.info('Try secure request:')
+               response = requests.get(url,auth=HTTPBasicAuth(username, password))
+           else:  
+               response = requests.get(url)
+           # let only 200 OK pass     
+           if response.status_code != 200:
+               _logger.info('Failed request:'+ str(response.status_code) )
+               sys.exit(2)
+           else:  
+               resp_object = json.loads(response.text)
            # primitives = json_extract(resp_object)
            primitives = flatdict.FlatDict(resp_object, delimiter=delimiter)
            for k, v in primitives.items():
