@@ -34,6 +34,13 @@ https://www.unified-automation.com/de/produkte/entwicklerwerkzeuge/uaexpert.html
 ### Starts OPC UA Server on port 4841, delimter '.' and rest url https://api.coincap.io/v2/assets/bitcoin every 5 seconds
 `python resttoopcuaserver.py -p 4841 -d . -u https://api.coincap.io/v2/assets/bitcoin -c 5`
 
+### Starts OPC UA Server on default port 4840, and rest url https://postman-echo.com/basic-auth with username "postman" and password "password"
+`python resttoopcuaserver.py --url https://postman-echo.com/basic-auth --username postman --password password`
+
+### Starts OPC UA Server on default port 4840, and rest url with apikey https://notexisting.com/?key=dsfhusdhfisd78z789sdf
+ATTENTION: URL and APIKEY are not EXITING. Only for documentation purpose. 
+python resttoopcuaserver.py --url https://notexisting.com/?key=dsfhusdhfisd78z789sdf
+
 
 ## Screenshot of OPC UA CLient UAExpert Browsing the Example
 ![Screenshot of OPC UA CLient UAExpert Browsing the Example](/docs/images/screenshot1.png?raw=true "Screenshot")
