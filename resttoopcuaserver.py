@@ -22,15 +22,21 @@ under the License.
 import logging
 import asyncio
 import sys, getopt
+import re
 
 sys.path.insert(0, "..")
 
 from asyncua import ua, Server
 from asyncua.common.methods import uamethod
+from asyncua.crypto.permission_rules import SimpleRoleRuleset
+from asyncua.server.users import UserRole
+from asyncua.server.user_managers import CertificateUserManager
 import requests
 from requests.auth import HTTPBasicAuth
 import json
 import flatdict
+from os.path import exists
+from datetime import datetime
 
 
 
@@ -68,7 +74,7 @@ async def write_variable_value(variable,newvalue,_logger=None):
 
 async def main():
    port = 4840
-   url = "https://api.open-notify.org/iss-now.json"
+   url = "http://api.open-notify.org/iss-now.json"
    delimiter = '.'
    cycle = 1
    username = ''
@@ -103,14 +109,40 @@ async def main():
 
 
    # setup our server
+  
    server = Server()
-   await server.init()
+  
    server.set_endpoint('opc.tcp://0.0.0.0:{}/freeopcua/server/'.format(port))
     # setup our own namespace, not really necessary but should as spec
 
-   uri = url
-   idx = await server.register_namespace(uri)
 
+
+
+   # load server certificate and private key. This enables endpoints
+   # with signing and encryption.
+   await server.init()
+
+
+   if exists("certificate.der") and exists("key.pem"):
+       await server.load_certificate("certificate.der")
+       await server.load_private_key("key.pem")
+       
+       server.set_security_IDs(["Anonymous", "Basic256Sha256", "Username"])
+       server.set_security_policy([ua.SecurityPolicyType.Basic256Sha256_SignAndEncrypt,ua.SecurityPolicyType.NoSecurity])
+   else:
+       server.set_security_policy([ua.SecurityPolicyType.NoSecurity])   
+   uri = 'urn:localhost:freeopcua:server'.format(port)
+   idx = await server.register_namespace(uri)
+   subject=str(server.certificate.subject)
+   m = re.search('CN=([^,]+)', subject)
+   m.group(1)
+   #now = 
+   urn =  m.group(1)
+
+   await server.set_build_info(urn,"My Company","RestToOPCUA Server","v0.1","",datetime.now())
+
+   m = re.search('(.*)/', url)
+   await server.set_application_uri(m.group(0));
 
     # populating our address space
     # server.nodes, contains links to very common nodes like objects and root
