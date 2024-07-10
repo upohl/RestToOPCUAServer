@@ -1,3 +1,4 @@
 asyncua==0.9.96
 flatdict==4.0.1
 requests==2.27.1
+zipp>=3.19.1 # not directly required, pinned by Snyk to avoid a vulnerability
